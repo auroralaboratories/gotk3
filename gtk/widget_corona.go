@@ -19,3 +19,7 @@ func (v *Widget) GetScreen() (*gdk.Screen, error) {
 	w := &gdk.Screen{wrapObject(unsafe.Pointer(c))}
 	return w, nil
 }
+
+func (v *Widget) Realize() {
+	C.gtk_widget_realize(v.native())
+}
