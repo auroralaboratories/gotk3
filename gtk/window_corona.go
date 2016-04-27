@@ -8,8 +8,8 @@ package gtk
 import "C"
 import (
 	"fmt"
-	"github.com/gotk3/gotk3/cairo"
-	"github.com/gotk3/gotk3/gdk"
+	"github.com/auroralaboratories/gotk3/cairo"
+	"github.com/auroralaboratories/gotk3/gdk"
 	"unsafe"
 )
 
