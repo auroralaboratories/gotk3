@@ -8,8 +8,8 @@ import "C"
 import (
 	"unsafe"
 
-	"github.com/gotk3/gotk3/gdk"
-	"github.com/gotk3/gotk3/glib"
+	"github.com/auroralaboratories/gotk3/gdk"
+	"github.com/auroralaboratories/gotk3/glib"
 )
 
 // TextWindowType is a representation of GTK's GtkTextWindowType.

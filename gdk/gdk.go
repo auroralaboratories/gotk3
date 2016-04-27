@@ -28,7 +28,7 @@ import (
 	"strconv"
 	"unsafe"
 
-	"github.com/gotk3/gotk3/glib"
+	"github.com/auroralaboratories/gotk3/glib"
 )
 
 func init() {
