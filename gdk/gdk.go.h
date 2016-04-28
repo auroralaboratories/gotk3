@@ -1,3 +1,5 @@
+#ifndef GDK_GO_H
+#define GDK_GO_H
 /*
  * Copyright (c) 2013-2014 Conformal Systems <info@conformal.com>
  *
@@ -17,84 +19,22 @@
  */
 
 #include <stdlib.h>
+#include <gdk/gdk.h>
 
-// Type Casting
-static GdkAtom
-toGdkAtom(void *p)
-{
-	return ((GdkAtom)p);
-}
+gboolean          _gdk_pixbuf_save_jpeg(GdkPixbuf *pixbuf, const char *filename, GError ** err, const char *quality);
+gboolean          _gdk_pixbuf_save_png(GdkPixbuf *pixbuf, const char *filename, GError ** err, const char *compression);
+GdkAtom           toGdkAtom(void *p);
+GdkCursor*        toGdkCursor(void *p);
+GdkDevice*        toGdkDevice(void *p);
+GdkDeviceManager* toGdkDeviceManager(void *p);
+GdkDisplay*       toGdkDisplay(void *p);
+GdkDragContext*   toGdkDragContext(void *p);
+GdkPixbuf*        toGdkPixbuf(void *p);
+GdkPixbufLoader*  toGdkPixbufLoader(void *p);
+GdkScreen*        toGdkScreen(void *p);
+GdkVisual*        toGdkVisual(void *p);
+GdkWindow*        toGdkWindow(void *p);
+GdkWindow*        toGdkWindow(void *p);
+GdkFilterReturn   gdk_window_filter_func_callback(GdkXEvent *xevent, GdkEvent *event, gpointer goFilterCallbackPointer);
 
-static GdkDevice *
-toGdkDevice(void *p)
-{
-	return (GDK_DEVICE(p));
-}
-
-static GdkCursor *
-toGdkCursor(void *p)
-{
-	return (GDK_CURSOR(p));
-}
-
-static GdkDeviceManager *
-toGdkDeviceManager(void *p)
-{
-	return (GDK_DEVICE_MANAGER(p));
-}
-
-static GdkDisplay *
-toGdkDisplay(void *p)
-{
-	return (GDK_DISPLAY(p));
-}
-
-static GdkDragContext *
-toGdkDragContext(void *p)
-{
-	return (GDK_DRAG_CONTEXT(p));
-}
-
-static GdkPixbuf *
-toGdkPixbuf(void *p)
-{
-	return (GDK_PIXBUF(p));
-}
-
-static gboolean
-_gdk_pixbuf_save_png(GdkPixbuf *pixbuf,
-const char *filename, GError ** err, const char *compression)
-{
-	return gdk_pixbuf_save(pixbuf, filename, "png", err, "compression", compression, NULL);
-}
-
-static gboolean
-_gdk_pixbuf_save_jpeg(GdkPixbuf *pixbuf,
-const char *filename, GError ** err, const char *quality)
-{
-	return gdk_pixbuf_save(pixbuf, filename, "jpeg", err, "quality", quality, NULL);
-}
-
-static GdkPixbufLoader *
-toGdkPixbufLoader(void *p)
-{
-	return (GDK_PIXBUF_LOADER(p));
-}
-
-static GdkScreen *
-toGdkScreen(void *p)
-{
-	return (GDK_SCREEN(p));
-}
-
-static GdkVisual *
-toGdkVisual(void *p)
-{
-	return (GDK_VISUAL(p));
-}
-
-static GdkWindow *
-toGdkWindow(void *p)
-{
-	return (GDK_WINDOW(p));
-}
+#endif
