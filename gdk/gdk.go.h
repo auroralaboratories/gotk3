@@ -19,7 +19,9 @@
  */
 
 #include <stdlib.h>
+#include <X11/Xlib.h>
 #include <gdk/gdk.h>
+
 
 gboolean          _gdk_pixbuf_save_jpeg(GdkPixbuf *pixbuf, const char *filename, GError ** err, const char *quality);
 gboolean          _gdk_pixbuf_save_png(GdkPixbuf *pixbuf, const char *filename, GError ** err, const char *compression);

@@ -107,6 +107,14 @@ func (v *Window) RemoveFilter(filterCallback *FilterCallback) bool {
 	return false
 }
 
+func (v *Window) GetEventMask() EventMask {
+	return EventMask(C.gdk_window_get_events(v.native()))
+}
+
+func (v *Window) SetEventMask(mask EventMask) {
+	C.gdk_window_set_events(v.native(), (C.GdkEventMask)(mask))
+}
+
 //export go_genericGtkWindowFilterFuncCallback
 func go_genericGtkWindowFilterFuncCallback(callback unsafe.Pointer, xevent *C.GdkXEvent, event *C.GdkEvent) int {
 	for _, fcb := range gdkWindowFilters {
