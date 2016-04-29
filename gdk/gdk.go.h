@@ -19,7 +19,9 @@
  */
 
 #include <stdlib.h>
+#include <stdint.h>
 #include <X11/Xlib.h>
+#include <glib.h>
 #include <gdk/gdk.h>
 
 
@@ -37,6 +39,7 @@ GdkScreen*        toGdkScreen(void *p);
 GdkVisual*        toGdkVisual(void *p);
 GdkWindow*        toGdkWindow(void *p);
 GdkWindow*        toGdkWindow(void *p);
-GdkFilterReturn   gdk_window_filter_func_callback(GdkXEvent *xevent, GdkEvent *event, gpointer goFilterCallbackPointer);
+gpointer          uint32_to_gpointer(uint32_t);
+GdkFilterReturn   gdk_window_filter_func_callback(GdkXEvent *xevent, GdkEvent *event, gpointer goFilterID);
 
 #endif

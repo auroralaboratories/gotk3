@@ -6,6 +6,8 @@ import "C"
 
 import (
 	"unsafe"
+	"math/rand"
+	"time"
 )
 
 var gdkWindowFilters = make([]*FilterCallback, 0)
@@ -30,6 +32,7 @@ func (v *XEvent) Native() uintptr {
 
 
 type FilterCallback struct {
+	ID       uint32
 	Window   *Window
 	Callback FilterFunc
 	UserData unsafe.Pointer
@@ -45,25 +48,39 @@ const (
 type FilterFunc func(xevent XEvent, event Event, userdata unsafe.Pointer) FilterReturn
 
 
-func AddWindowEventFilter(filter FilterFunc, userdata unsafe.Pointer) *FilterCallback {
+func addWindowEventFilter(window *Window, filter FilterFunc, userdata unsafe.Pointer) *FilterCallback {
+	var gdkWindow *C.GdkWindow
+
+	if window != nil {
+		gdkWindow = window.native()
+	}
+
 	newFilterCallback := &FilterCallback{
+		ID:       rand.New(rand.NewSource(time.Now().UnixNano())).Uint32(),
+		Window:   window,
 		Callback: filter,
 		UserData: userdata,
 	}
 
 	gdkWindowFilters = append(gdkWindowFilters, newFilterCallback)
 
-	C.gdk_window_add_filter(nil, (C.GdkFilterFunc)(C.gdk_window_filter_func_callback), C.gpointer(newFilterCallback))
+	C.gdk_window_add_filter(gdkWindow, (C.GdkFilterFunc)(C.gdk_window_filter_func_callback), C.uint32_to_gpointer(C.uint32_t(newFilterCallback.ID)))
 
 	return newFilterCallback
 }
 
-func RemoveWindowEventFilter(filterCallback *FilterCallback) bool {
+func removeWindowEventFilter(window *Window, filterCallback *FilterCallback) bool {
+	var gdkWindow *C.GdkWindow
+
+	if window != nil {
+		gdkWindow = window.native()
+	}
+
 	for i, fcb := range gdkWindowFilters {
 	//	if this filter matches the one we're removing...
-		if fcb == filterCallback {
+		if fcb.ID == filterCallback.ID {
 		//	call the remove
-			C.gdk_window_remove_filter(nil, (C.GdkFilterFunc)(C.gdk_window_filter_func_callback), nil)
+			C.gdk_window_remove_filter(gdkWindow, (C.GdkFilterFunc)(C.gdk_window_filter_func_callback), nil)
 
 		//	remove the golang-side tracking element
 			gdkWindowFilters = append(gdkWindowFilters[:i], gdkWindowFilters[(i+1):]...)
@@ -73,38 +90,23 @@ func RemoveWindowEventFilter(filterCallback *FilterCallback) bool {
 	}
 
 	return false
+}
+
+func AddGlobalEventFilter(filter FilterFunc, userdata unsafe.Pointer) *FilterCallback {
+	return addWindowEventFilter(nil, filter, userdata)
+}
+
+func RemoveGlobalEventFilter(filterCallback *FilterCallback) bool {
+	return removeWindowEventFilter(nil, filterCallback)
 }
 
 
 func (v *Window) AddEventFilter(filter FilterFunc, userdata unsafe.Pointer) *FilterCallback {
-	newFilterCallback := &FilterCallback{
-		Window:   v,
-		Callback: filter,
-		UserData: userdata,
-	}
-
-	gdkWindowFilters = append(gdkWindowFilters, newFilterCallback)
-
-	C.gdk_window_add_filter(v.native(), (C.GdkFilterFunc)(C.gdk_window_filter_func_callback), C.gpointer(newFilterCallback))
-
-	return newFilterCallback
+	return addWindowEventFilter(v, filter, userdata)
 }
 
 func (v *Window) RemoveFilter(filterCallback *FilterCallback) bool {
-	for i, fcb := range gdkWindowFilters {
-	//	if this filter matches the one we're removing...
-		if fcb == filterCallback {
-		//	call the remove
-			C.gdk_window_remove_filter(v.native(), (C.GdkFilterFunc)(C.gdk_window_filter_func_callback), nil)
-
-		//	remove the golang-side tracking element
-			gdkWindowFilters = append(gdkWindowFilters[:i], gdkWindowFilters[(i+1):]...)
-
-			return true
-		}
-	}
-
-	return false
+	return removeWindowEventFilter(v, filterCallback)
 }
 
 func (v *Window) GetEventMask() EventMask {
@@ -116,9 +118,9 @@ func (v *Window) SetEventMask(mask EventMask) {
 }
 
 //export go_genericGtkWindowFilterFuncCallback
-func go_genericGtkWindowFilterFuncCallback(callback unsafe.Pointer, xevent *C.GdkXEvent, event *C.GdkEvent) int {
+func go_genericGtkWindowFilterFuncCallback(filterID uint32, xevent *C.GdkXEvent, event *C.GdkEvent) int {
 	for _, fcb := range gdkWindowFilters {
-		if unsafe.Pointer(fcb) == callback {
+		if fcb.ID == filterID {
 			xev := XEvent{ xevent }
 			gev := Event{ event }
 

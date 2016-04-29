@@ -54,10 +54,12 @@ GdkWindow* toGdkWindow(void *p) {
 	return (GDK_WINDOW(p));
 }
 
-GdkFilterReturn gdk_window_filter_func_callback(GdkXEvent *xevent, GdkEvent *event, gpointer goFilterCallbackPointer) {
+gpointer uint32_to_gpointer(uint32_t in) {
+	return GUINT_TO_POINTER(in);
+}
+
+GdkFilterReturn gdk_window_filter_func_callback(GdkXEvent *xevent, GdkEvent *event, gpointer goFilterID) {
 	XEvent *xlibEvent = (XEvent*)(xevent);
 
-	printf("EventType: %d", xlibEvent->type);
-
-	return (GdkFilterReturn)(go_genericGtkWindowFilterFuncCallback(goFilterCallbackPointer, xevent, event));
+	return (GdkFilterReturn)(go_genericGtkWindowFilterFuncCallback((uint32_t)(GPOINTER_TO_UINT(goFilterID)), xevent, event));
 }
