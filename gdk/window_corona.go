@@ -5,9 +5,9 @@ package gdk
 import "C"
 
 import (
-	"unsafe"
 	"math/rand"
 	"time"
+	"unsafe"
 )
 
 var gdkWindowFilters = make([]*FilterCallback, 0)
@@ -30,7 +30,6 @@ func (v *XEvent) Native() uintptr {
 	return uintptr(unsafe.Pointer(v.native()))
 }
 
-
 type FilterCallback struct {
 	ID       uint32
 	Window   *Window
@@ -39,6 +38,7 @@ type FilterCallback struct {
 }
 
 type FilterReturn int
+
 const (
 	FilterReturnContinue  FilterReturn = C.GDK_FILTER_CONTINUE
 	FilterReturnTranslate              = C.GDK_FILTER_TRANSLATE
@@ -46,7 +46,6 @@ const (
 )
 
 type FilterFunc func(xevent XEvent, event Event, userdata unsafe.Pointer) FilterReturn
-
 
 func addWindowEventFilter(window *Window, filter FilterFunc, userdata unsafe.Pointer) *FilterCallback {
 	var gdkWindow *C.GdkWindow
@@ -77,12 +76,12 @@ func removeWindowEventFilter(window *Window, filterCallback *FilterCallback) boo
 	}
 
 	for i, fcb := range gdkWindowFilters {
-	//	if this filter matches the one we're removing...
+		//	if this filter matches the one we're removing...
 		if fcb.ID == filterCallback.ID {
-		//	call the remove
+			//	call the remove
 			C.gdk_window_remove_filter(gdkWindow, (C.GdkFilterFunc)(C.gdk_window_filter_func_callback), nil)
 
-		//	remove the golang-side tracking element
+			//	remove the golang-side tracking element
 			gdkWindowFilters = append(gdkWindowFilters[:i], gdkWindowFilters[(i+1):]...)
 
 			return true
@@ -99,7 +98,6 @@ func AddGlobalEventFilter(filter FilterFunc, userdata unsafe.Pointer) *FilterCal
 func RemoveGlobalEventFilter(filterCallback *FilterCallback) bool {
 	return removeWindowEventFilter(nil, filterCallback)
 }
-
 
 func (v *Window) AddEventFilter(filter FilterFunc, userdata unsafe.Pointer) *FilterCallback {
 	return addWindowEventFilter(v, filter, userdata)
@@ -121,8 +119,8 @@ func (v *Window) SetEventMask(mask EventMask) {
 func go_genericGtkWindowFilterFuncCallback(filterID uint32, xevent *C.GdkXEvent, event *C.GdkEvent) int {
 	for _, fcb := range gdkWindowFilters {
 		if fcb.ID == filterID {
-			xev := XEvent{ xevent }
-			gev := Event{ event }
+			xev := XEvent{xevent}
+			gev := Event{event}
 
 			return int(fcb.Callback(xev, gev, fcb.UserData))
 		}
