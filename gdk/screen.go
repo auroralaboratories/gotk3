@@ -188,11 +188,18 @@ func (v *Screen) GetActiveWindow() (*Window, error) {
 	return toWindow(C.gdk_screen_get_active_window(v.native()))
 }
 
+// void 	gdk_screen_get_monitor_geometry ()
+func (v *Screen) GetMonitorGeometry(m int) *Rectangle {
+	var rect C.GdkRectangle
+	C.gdk_screen_get_monitor_geometry(v.native(), C.gint(m), &rect)
+
+	return wrapRectangle(&rect)
+}
+
 // void 	gdk_screen_set_font_options ()
 // gboolean 	gdk_screen_get_setting ()
 // const cairo_font_options_t * 	gdk_screen_get_font_options ()
 // GList * 	gdk_screen_get_window_stack ()
 // GList * 	gdk_screen_list_visuals ()
 // GList * 	gdk_screen_get_toplevel_windows ()
-// void 	gdk_screen_get_monitor_geometry ()
 // void 	gdk_screen_get_monitor_workarea ()
